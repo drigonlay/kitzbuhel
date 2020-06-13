@@ -2,12 +2,17 @@
 //
 
 #include <iostream>
-#include "MapLoader.hpp"
+#include "BestRouteSearcher.hpp"
 
 int main()
 {
-    MapLoader* map = new MapLoader();
-    map->LoadMapFile("mapsmall.txt");
+    BestRouteSearcher searcher("mapsmall.txt");
+
+    searcher.PrintMap();
+    searcher.FindBestRouteOfMap();
+
+    //MapLoader* map = new MapLoader();
+    //map->LoadMapFile("mapsmall.txt");
 
     /*
         Algorithm 1 - Dirty brute force, breadth first search

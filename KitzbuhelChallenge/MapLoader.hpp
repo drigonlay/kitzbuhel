@@ -5,15 +5,29 @@
 struct Node
 {
 	Node()
-		: east(nullptr), south(nullptr), west(nullptr), north(nullptr), height(0)
+		: east(nullptr)
+		, south(nullptr)
+		, west(nullptr)
+		, north(nullptr)
+		, height(0)
+		, search_parent(nullptr)
+		, search_length(0)
+		, search_steepn(0)
 	{
 
 	}
 
-	Node(Node* inEast, Node* inSouth, Node* inWest, Node* inNorth, uint32_t height)
-		: east(inEast), south(inSouth), west(inWest), north(inNorth), height(height)
+	Node(const Node& node)
 	{
-		
+		east = node.east;
+		south = node.south;
+		west = node.west;
+		north = node.north;
+		height = node.height;
+
+		search_length = node.search_length;
+		search_parent = node.search_parent;
+		search_steepn = node.search_steepn;
 	}
 
 	Node* east;
@@ -21,6 +35,11 @@ struct Node
 	Node* west;
 	Node* north;
 	uint32_t height;
+
+	//For search purposes
+	Node* search_parent;
+	uint32_t search_length;
+	uint32_t search_steepn;
 };
 
 class MapLoader
@@ -29,10 +48,17 @@ public:
 	MapLoader()
 		: head(new Node())
 	{	
-		std::cout << "Hello World!\n";
 	}
 
 	void LoadMapFile(std::string fileName);
+
+	void PrintMap();
+
+	Node* GetMapHead() { return head; }
+
+	uint32_t GetDimensionX() { return dimensionX; }
+
+	uint32_t GetDimensionY() { return dimensionY; }
 
 private:
 	

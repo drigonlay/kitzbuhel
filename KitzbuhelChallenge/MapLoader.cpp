@@ -16,23 +16,19 @@ void MapLoader::LoadMapFile(std::string fileName)
 	}
 
 	std::string line;
-	int val;
+	uint32_t val;
 
 	// Part 1: Get dimensions
 	if (std::getline(inFile, line))
 	{
 		std::istringstream iss(line);
 		iss >> dimensionX >> dimensionY;
-		std::cout << "Rows: " << dimensionX << " Cols: " << dimensionY << std::endl;
 	}
 
-
-	// Part 2: Create grid -- set first row and use as terminator for the other rows
+	// Part 2: Create map
 	Node* currNode = head;
 	Node* prevRowStart = head;
 	Node* prevNode = nullptr;
-
-	// Part 3: Add the rest of the rows
 
 	for (uint32_t row = 0; row < dimensionY; ++row)
 	{
@@ -46,8 +42,6 @@ void MapLoader::LoadMapFile(std::string fileName)
 
 				if (0 == row)
 				{
-					
-
 					Node* temp = new Node();
 					temp->height = val;
 					temp->west = &(*currNode);	//DBUGZ point back to previous
@@ -100,7 +94,13 @@ void MapLoader::LoadMapFile(std::string fileName)
 		}
 	} //end for (uint32_t row = 0; row < dimensionY; ++row)
 
-	// Part 3: PRINT EASTWARD
+	inFile.close();
+}
+
+void MapLoader::PrintMap() //DBUGZ for debugging
+{
+	std::cout << "Rows: " << dimensionX << " Cols: " << dimensionY << std::endl;
+
 	Node* printRowHead = head->east;
 
 	for (uint32_t row = 0; row < dimensionY; ++row)
@@ -117,7 +117,4 @@ void MapLoader::LoadMapFile(std::string fileName)
 
 		printRowHead = printRowHead->south;
 	}
-		inFile.close();
 }
-
-
