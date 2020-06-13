@@ -7,9 +7,39 @@
 int main()
 {
     MapLoader* map = new MapLoader();
-    map->LoadMapFile();
+    map->LoadMapFile("mapsmall.txt");
 
-    std::cout << "Hello World!\n";
+    /*
+        Algorithm 1 - Dirty brute force, breadth first search
+            
+           1. Load map into linked list grid.
+           2. Start from first search root node, moving eastward and then southward
+           3. Perform breadth first search, priorty of direction is east>south>weast>north.
+                Note: When doing BFS, calculate the steepness - take care of the route back later
+
+                Push current visited nodes into Route
+                    Route - contains a stack of the visited nodes to backtrack the route
+                                     - contains the length of the route
+                                     - contains the difference between root node and last node
+
+                If the Route is longer and then steeper than current best Route - replace the best Route with the new Route
+
+                If searcher reaches a dead end, go back to #2
+
+            4. If currentRootNode < (bestStartNode - bestEndNode)
+
+                400 < (1500 - 700)
+                400 < 800
+
+        Algorithm 1 - Dirty brute force,  first search
+
+        Algorithm - Optimized:
+
+           1. Load map into linked list grid. 
+                // Save the node of the highest value and the node of the lowest value. -- Not gonna work, there are duplicates
+
+           2. 
+    */
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
