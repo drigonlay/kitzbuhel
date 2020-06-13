@@ -1,13 +1,10 @@
 #include "BestRouteSearcher.hpp"
 #include <queue>
+#include <string>
 
 BestRouteSearcher::BestRouteSearcher(std::string fileName)
 	: m_mapHead(nullptr)
-	, m_currRootNode(nullptr)
-	, m_rootNodeOfBest(nullptr)
 	, m_tailNodeOfBest(nullptr)
-	, m_lengthOfBest(0)
-	, m_steepnOfBest(0)
 {
 	LoadMapAndGetMapHead(fileName);
 }
@@ -31,52 +28,36 @@ uint32_t BestRouteSearcher::CalcSteepn(Node* node)
 	}
 	else
 	{
-		std::cout << "parent recon steepn" << node->search_parent->search_steepn + node->search_parent->height << " own heigh" << node->height << std::endl;
 		return (node->search_parent->search_steepn + node->search_parent->height) - node->height;
 	}
 }
 
 void BestRouteSearcher::UpdateBestRoute(Node* tailNodeCandidateBest, uint32_t const lengthCandidateBest)
 {
-	//DBUGZ fill up the root of the best if we need to backtrack the parent
-	//DBUGZ fill up the steepnOfBest if it is longer than current best
-	// Do we even need to save the parent?
-
 	if (nullptr == m_tailNodeOfBest)
 	{
-		std::cout << "UPDATED NULL Best Length from " << m_lengthOfBest << " to " << lengthCandidateBest << std::endl;
 		m_tailNodeOfBest = tailNodeCandidateBest;
-		m_lengthOfBest = lengthCandidateBest;
-
 		return;
 	}
 
-	if (lengthCandidateBest > m_lengthOfBest)
+	if (tailNodeCandidateBest->search_length > m_tailNodeOfBest->search_length)
 	{
-		std::cout << "UPDATED Best Length from " << m_lengthOfBest << " to " << lengthCandidateBest << std::endl;
 		m_tailNodeOfBest = tailNodeCandidateBest;
-		m_lengthOfBest = lengthCandidateBest;
 	}
-	else if (lengthCandidateBest == m_lengthOfBest)
+	else if (tailNodeCandidateBest->search_length == m_tailNodeOfBest->search_length)
 	{
-		//DBUGZ now check steepness
-		//get parent
 		if (tailNodeCandidateBest->search_steepn > m_tailNodeOfBest->search_steepn)
 		{
-			std::cout << "UPDATED STEEP Best Length from " << m_lengthOfBest << " to " << lengthCandidateBest << std::endl;
 			m_tailNodeOfBest = tailNodeCandidateBest;
-			m_lengthOfBest = lengthCandidateBest;
 		}
 	}
 }
 
 void BestRouteSearcher::FindBestRouteOfRootNode(Node* rootNode)
 {
-	//DBUGZ make queue
 	std::queue<Node*> searchQueue;
 
 	rootNode->search_length = 1;
-	//rootNode->search_parent = nullptr; //DBUGZ just unset it
 	searchQueue.push(new Node(*rootNode));
 
 	while (!searchQueue.empty())
@@ -85,11 +66,8 @@ void BestRouteSearcher::FindBestRouteOfRootNode(Node* rootNode)
 
 		UpdateBestRoute(searchSubRootNode, searchSubRootNode->search_length);
 
-		std::cout << "PATH: " << searchSubRootNode->height << " PATH LEN: " << searchSubRootNode->search_length << std::endl;
-
 		//DBUGZ NOTE so you stop thinking about this. It is impossible for a Node to 
 		//push its parent into the stack because it will always have a lesser height than its parent
-
 		//DBUGZ NOTE search also checks the empty head since it is west of map Root Node
 
 		//DBUGZ search east
@@ -152,7 +130,7 @@ void BestRouteSearcher::FindBestRouteOfRootNode(Node* rootNode)
 
 void BestRouteSearcher::FindBestRouteOfMap()
 {
-	//FindBestRouteOfRootNode(m_mapHead->east); //DBUZG because m_mapHead points to the empty head
+	std::cout << "\nFinding best route ..." << std::endl;
 
 	Node* searchRowRoot = m_mapHead->east;
 	Node* searchColRoot = searchRowRoot;
@@ -161,17 +139,12 @@ void BestRouteSearcher::FindBestRouteOfMap()
 
 	for (uint32_t row = 0; row < dimensionY; ++row)
 	{
-
 		for (uint32_t col = 0; col < dimensionX; ++col)
 		{
-
-			if (searchColRoot->height < m_lengthOfBest)
+			//DBUGZ here we check if that searchRootNode is worth checking
+			//DBUGZ if the height of the Node is less than the length of the best Route, dont bother checking
+			if (searchColRoot->height > (nullptr == m_tailNodeOfBest ? 0 : m_tailNodeOfBest->search_length))
 			{
-				std::cout << "ROOT IGNORED" << searchColRoot->height << std::endl;
-			}
-			else
-			{
-				std::cout << "ROOT" << searchColRoot->height << std::endl;
 				FindBestRouteOfRootNode(searchColRoot);
 			}
 
@@ -182,20 +155,24 @@ void BestRouteSearcher::FindBestRouteOfMap()
 		searchColRoot = searchRowRoot;
 	}
 
-	//DBUGZ printing part
-	//DBUGZ printing part
-	//DBUGZ printing part
+	PrintBestRoute();
+}
 
+void BestRouteSearcher::PrintBestRoute()
+{
 	std::cout << "BEST Route length: " << m_tailNodeOfBest->search_length << " STEEPNESS " << m_tailNodeOfBest->search_steepn << std::endl;
 	std::cout << "ROUTE: ";
 
 	Node* printPtr = m_tailNodeOfBest;
+	std::string routeString;
+
 	while (nullptr != printPtr)
 	{
-		std::cout << printPtr->height << " ";
+		routeString.insert(0, " ");
+		routeString.insert(0, std::to_string(printPtr->height));
+
 		printPtr = printPtr->search_parent;
 	}
 
-	//DBUGZ here we check if that searchRootNode is worth checking
-	//DBUGZ if the height of the Node is less than the length of the best Route, dont bother checking
+	std::cout << "RESULT " << routeString << std::endl;
 }

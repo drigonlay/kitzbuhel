@@ -14,7 +14,6 @@ struct Node
 		, search_length(0)
 		, search_steepn(0)
 	{
-
 	}
 
 	Node(const Node& node)
@@ -47,6 +46,8 @@ class MapLoader
 public:
 	MapLoader()
 		: head(new Node())
+		, dimensionX(0)
+		, dimensionY(0)
 	{	
 	}
 

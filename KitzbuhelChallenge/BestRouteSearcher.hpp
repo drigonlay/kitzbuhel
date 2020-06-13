@@ -9,26 +9,23 @@ public:
 
 	BestRouteSearcher(std::string fileName);
 
-	void LoadMapAndGetMapHead(std::string fileName);
-
 	void PrintMap();
-
-	void FindBestRouteOfRootNode(Node* rootNode);
 
 	void FindBestRouteOfMap();
 
+	void PrintBestRoute();
+
 private:
 
-	void UpdateBestRoute(Node* tailNodeOfBest, uint32_t lengthOfBest); //DBUGZ later find out how to  reconstruct the route node by node
+	void UpdateBestRoute(Node* tailNodeOfBest, uint32_t lengthOfBest);
 
 	uint32_t CalcSteepn(Node* node);
 
+	void FindBestRouteOfRootNode(Node* rootNode);
+
+	void LoadMapAndGetMapHead(std::string fileName);
+
 	MapLoader m_map;
 	Node* m_mapHead;
-	Node* m_currRootNode;
-
-	Node* m_rootNodeOfBest;
 	Node* m_tailNodeOfBest;
-	uint32_t m_lengthOfBest;
-	uint32_t m_steepnOfBest;
 };

@@ -15,20 +15,23 @@ void MapLoader::LoadMapFile(std::string fileName)
 		exit(1);
 	}
 
-	std::string line;
-	uint32_t val;
+	std::cout << "Loading map..." << std::endl;
 
-	// Part 1: Get dimensions
+	std::string line;
+
 	if (std::getline(inFile, line))
 	{
 		std::istringstream iss(line);
 		iss >> dimensionX >> dimensionY;
 	}
 
-	// Part 2: Create map
+	std::cout << "Map size " << dimensionX << " x " << dimensionY << std::endl;
+
 	Node* currNode = head;
 	Node* prevRowStart = head;
 	Node* prevNode = nullptr;
+
+	uint32_t val;
 
 	for (uint32_t row = 0; row < dimensionY; ++row)
 	{
@@ -40,13 +43,14 @@ void MapLoader::LoadMapFile(std::string fileName)
 			{
 				iss >> val;
 
+				Node* temp = new Node();
+				temp->height = val;
+
 				if (0 == row)
 				{
-					Node* temp = new Node();
-					temp->height = val;
-					temp->west = &(*currNode);	//DBUGZ point back to previous
-					currNode->east = temp;		//DBUGZ point to forward
-					currNode = temp;			//DBUZG move curPtr new Node
+					temp->west = currNode;
+					currNode->east = temp;
+					currNode = temp;
 
 					if (0 == col)
 					{
@@ -58,46 +62,32 @@ void MapLoader::LoadMapFile(std::string fileName)
 					if (0 == col)
 					{
 						prevNode = prevRowStart;
-
-
-						Node* temp = new Node();
-						temp->height = val;
-						temp->north = prevNode;
-						prevNode->south = temp;
-						//temp->west  //DBUGZ this is null
-						//temp->east  //DBUGZ this is null
-
 						currNode = temp;
-						prevNode = prevNode->east;
 					}
 					else
 					{
-						Node* temp = new Node();
-						temp->height = val;
-						temp->north = &(*prevNode);		//DBUGZ point back to northern previous
-						temp->west = &(*currNode);		//DBUGZ this will be pointing to null if first column
-						
+						temp->west = currNode;
 						currNode->east = temp;
-						prevNode->south = temp;
-
 						currNode = currNode->east;
-						prevNode = prevNode->east;
 					}
+
+					temp->north = prevNode;
+					prevNode->south = temp;
+					prevNode = prevNode->east;
 				}
 			}
-
 		}
 
 		if (0 != row)
 		{
 			prevRowStart = prevRowStart->south;
 		}
-	} //end for (uint32_t row = 0; row < dimensionY; ++row)
+	}
 
 	inFile.close();
 }
 
-void MapLoader::PrintMap() //DBUGZ for debugging
+void MapLoader::PrintMap()
 {
 	std::cout << "Rows: " << dimensionX << " Cols: " << dimensionY << std::endl;
 
